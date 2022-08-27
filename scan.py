@@ -227,6 +227,7 @@ class Application(object):
 				json.dump({"matches": jsonData, "patternType": patternType, "pattern": pattern}, fd)
 			pprint(f'JSON dumped to [yellow]{args.display_json}[/yellow]')
 		pprint(f'[green]Done with pid[{pid}][/green]')
+		self._on_detached(pid, session, "done")
 
 		self._sessions.add(session)
 
@@ -239,7 +240,7 @@ class Application(object):
 		self._reactor.schedule(self._stop_if_idle, delay=0.25)
 
 	def _on_message(self, pid, message):
-		print("âš¡ message: pid={}, payload={}".format(pid, message["payload"]))
+		print(" message: pid={}, payload={}".format(pid, message["payload"]))
 
 
 app = Application()
