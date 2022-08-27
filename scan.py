@@ -188,6 +188,8 @@ class Application(object):
 			session.resume()
 		else:
 			self._device.resume(pid)
+		self._sessions.add(session)
+		
 		ranges = api.enumerate_memory_ranges(args.page_protection)
 		is_raw_pattern = args.search_pattern is not None
 		if args.search_string is not None:
@@ -229,7 +231,6 @@ class Application(object):
 		pprint(f'[green]Done with pid[{pid}][/green]')
 		self._on_detached(pid, session, "done")
 
-		self._sessions.add(session)
 
 	def _on_child_added(self, child):
 		self._instrument(child.pid)
