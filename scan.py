@@ -142,14 +142,14 @@ class Application(object):
 		# if pid is a name -> get a pid
 		if args.foremost:
 			prog = self._device.get_frontmost_application()
-			pprint(f"[green]Attaching to [yellow]{prog}[/yellow][/green]")
+			pprint(f"[green]Attaching to foremost [yellow]{prog}[/yellow][/green]")
 			session = self._device.attach(prog.pid)
 			pid = prog.pid
 		elif args.pid is not None:
 			strPid = str(args.pid)
 			if strPid.isnumeric():
-				session = self._device.attach(args.pid)
-				pid = args.pid
+				pid = int(args.pid)
+				session = self._device.attach(pid)
 			else:
 				processes = self._device.enumerate_processes()
 				target = None
@@ -164,6 +164,7 @@ class Application(object):
 					pprint(f'[green]Attaching to [yellow]{target}[/yellow][/green]')
 					session = self._device.attach(target.pid)
 					pid = target.pid
+					self.resume_session = True
 		# The last case just spawns the process for you
 		else:
 			pid = self._device.spawn(args.target)
@@ -183,7 +184,10 @@ class Application(object):
 
 		# TODO: Eventually we'll want to replace the hexdump with something python specific
 		api = script.exports
-		self._device.resume(pid)
+		if self.resume_session:
+			session.resume()
+		else:
+			self._device.resume(pid)
 		ranges = api.enumerate_memory_ranges(args.page_protection)
 		is_raw_pattern = args.search_pattern is not None
 		if args.search_string is not None:
@@ -235,7 +239,7 @@ class Application(object):
 		self._reactor.schedule(self._stop_if_idle, delay=0.25)
 
 	def _on_message(self, pid, message):
-		print("⚡ message: pid={}, payload={}".format(pid, message["payload"]))
+		print("âš¡ message: pid={}, payload={}".format(pid, message["payload"]))
 
 
 app = Application()
