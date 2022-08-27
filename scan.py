@@ -6,7 +6,6 @@ import threading
 
 import frida
 import argparse
-import sys
 from frida_tools.application import Reactor
 from rich import print as pprint
 from base64 import b64encode
@@ -82,8 +81,7 @@ if args.search_string is None and args.search_number is None and args.search_pat
 
 script_source = None
 script_dir = Path(__file__).parent.absolute()
-print(script_dir)
-with open(script_dir.joinpath("agent").joinpath("_agent.js"), "r") as fd:
+with open(script_dir.joinpath("agent").joinpath("_agent.js"), "r", encoding='utf-8') as fd:
 	script_source = fd.read()
 
 
