@@ -11,6 +11,7 @@ from frida_tools.application import Reactor
 from rich import print as pprint
 from base64 import b64encode
 from rich.progress import Progress
+from pathlib import Path
 import signal
 import json
 
@@ -80,7 +81,9 @@ if args.search_string is None and args.search_number is None and args.search_pat
 	exit(0)
 
 script_source = None
-with open(sys.argv[0][:sys.argv[0].rfind("/")] + "/agent/_agent.js", "r") as fd:
+script_dir = Path(__file__).parent.absolute()
+print(script_dir)
+with open(script_dir.joinpath("agent").joinpath("_agent.js"), "r") as fd:
 	script_source = fd.read()
 
 
