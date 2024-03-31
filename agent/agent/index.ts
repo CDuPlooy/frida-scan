@@ -32,6 +32,10 @@ rpc.exports = {
         const address = new NativePointer(addr)
         return address.readByteArray(size)
     },
+    readCString: function(addr: any): any  {
+        const address = new NativePointer(addr)
+        return address.readCString()
+    },
 }
 
 

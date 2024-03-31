@@ -54,12 +54,14 @@ parser.add_argument('-sp', dest='search_pattern', type=str,
 parser.add_argument('-dd', dest='display_dump', action='store_true',
 					help='When a pattern match is found, use the default frida hexdump',
 					default=True)
-parser.add_argument('-ds', dest='display_string', action='store_true',
+parser.add_argument('-cstring', dest='display_string', action='store_true',
 					help='Dump only the string match',
 					default=False)
 parser.add_argument('-dj', dest='display_json', type=str,
 					help='Dump results as json',
 					default=None)
+parser.add_argument('-ds', dest='cstring', action='store_false',
+					help='Dump cstrings only')
 parser.add_argument('-ff', dest='filter_file', type=str,
 					help='Exclude any ranges belonging to modules matching this list (comma separated)')
 # TODO: Better to fix this later, maybe accumulate results to a string
@@ -104,6 +106,7 @@ if args.display_string or args.display_json:
 class Application(object):
 	def __init__(self):
 		self._stop_requested = threading.Event()
+		self.resume_session = False	
 		self._reactor = Reactor(
 			run_until_return=lambda reactor: self._stop_requested.wait())
 
@@ -215,8 +218,9 @@ class Application(object):
 					end_address = address + window_size_right
 					address_window_size = end_address - start_address
 					if args.display_dump:
-						
 						print(api.hex_dump(start_address, address_window_size))
+					elif args.cstring:
+						print(api.read_c_string(address))
 					elif args.display_string:
 						print(f'Match found for pattern at {result["address"]}' )
 					elif args.display_json:
